@@ -1,0 +1,63 @@
+service: face-recognition-innovation
+
+custom:
+  bucket:
+    Ref: ImageBucket
+  collectionName: test-collection
+
+provider:
+  name: aws
+  runtime: java8
+  iam:
+    role:
+      managedPolicies:
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        - "arn:aws:iam::aws:policy/AmazonRekognitionFullAccess"
+  
+package:
+  artifact: target/face-recognition-innovation.jar
+
+functions:
+  ListCollections:
+    handler: ListCollections
+  CreateCollection:
+    handler: CreateCollection
+    environment:
+      collectionName: ${self:custom.collectionName}
+  ListFacesInCollection:
+    handler: ListFacesInCollection
+    environment:
+      collectionName: ${self:custom.collectionName}
+  DeleteCollection:
+    handler: DeleteCollection
+  DetectAndCropFaces:
+    handler: DetectAndCropFaces
+    environment:
+      bucketName: ${self:custom.bucket}
+      collectionName: ${self:custom.collectionName}
+    events:
+      - s3:
+          bucket: ${self:custom.bucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: input/
+            - suffix: .png
+          existing: true
+  IndexFacesAndOutput:
+    handler: IndexFacesAndOutput
+    environment:
+      bucketName: ${self:custom.bucket}
+      collectionName: ${self:custom.collectionName}
+    events:
+      - s3:
+          bucket: ${self:custom.bucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: crop/cropped-faces/
+            - suffix: .png
+          existing: true
+
+resources:
+  Resources:
+    ImageBucket:
+      Type: AWS::S3::Bucket
