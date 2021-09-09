@@ -1,20 +1,16 @@
 # Recreating Apple's People Album Using Amazon Rekognition (With Support For Individual And Group Photos)
 
-<hr>
-
 ## Idea:
 
 Apple's photos app has a pretty cool feature called the "People album" that groups photos together depending on who is in it.
 
-For example, the photo below is a view of the People album - selecting "Kristen" will show all the photos where
-"Kristen" has been identified.
+For example, the photo below is a view of the People album - selecting "Kirsten" will show all the photos where
+"Kirsten" has been identified.
 
 ![iPhone People Album](./photos/readMe/peopleAlbum.png)
 
 I wanted to make something similar using Amazon Rekognition's face detection, indexing, and searching capabilities and support both
 individual and group photos.
-
-<hr>
 
 ## Key Words:
 `Collection` - A collection is where you can store information about faces and where you can search for matching faces.
@@ -30,8 +26,6 @@ then more images/faces will be indexed. So, if I add 5 photos of myself, then al
 be indexed and added to the collection leading to 5 unique `Face IDs`. But, since all the images are of me, they will all be linked
 back to 1 unique `Person ID`.
 
-<hr>
-
 ## Architecture Diagram:
 
 ![Architecture Diagram](./photos/readMe/architectureDiagram.png)
@@ -39,8 +33,6 @@ back to 1 unique `Person ID`.
 <b> Note - </b> The diagram shows 3 S3 buckets, but in reality, I only used one bucket with each of the
 three instances shown being a different directory (input/, crop/, output/). Just made the diagram clearer
 to put them as three different buckets.
-
-<hr>
 
 ## Purpose Of Each Lambda:
 
@@ -91,8 +83,6 @@ generate a new `Person ID` and add the face to the collection and tag with the n
 
 In the end, the series of `output/{{Person ID}}/full-images/` folders and the images in them will be my version of Apple's People album! 
 The `output/{{Person ID}}/indexed-images/` is there for clarity and shows the cropped images that have face metadata contained in the face collection.
-
-<hr>
 
 ## General Algorithm:
 This will walk through the generalized logic of the system while ignoring the nitty gritty details.
